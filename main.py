@@ -7,6 +7,15 @@ from google_auth_oauthlib.flow import InstalledAppFlow
 from googleapiclient.discovery import build
 from googleapiclient.http import MediaIoBaseDownload
 import pandas as pd 
+import numpy
+import pendulum
+from datetime import datetime, timedelta
+import pytz
+
+index_begin = 0
+index_end = 0
+output_string = "test"
+
 
 def download():
 
@@ -59,5 +68,3 @@ while True:
     df = pd.DataFrame(pd.read_excel("spreadsheat.xlsx"))
     print(df)
 
-
-        
