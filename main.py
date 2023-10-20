@@ -10,11 +10,10 @@ from googleapiclient.http import MediaIoBaseDownload
 def download():
 
     while True:
-        file_id = ('1vfPgHSwqbd9KiflPQBj0NOsXgSJOuGhh')
-        request = drive_service.files().get_media(fileId=file_id)
         f = open('id.txt','r')
         file_id= f.readline()
-        fh = io.BytesIO()
+        request = drive_service.files().export_media(fileId=file_id, mimeType='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet')
+        
         downloader = MediaIoBaseDownload(fh, request)
         done = False
         while done is False:
@@ -23,7 +22,7 @@ def download():
 
         # The file has been downloaded into RAM, now save it in a file
         fh.seek(0)
-        with open('HotelMoment.pdf', 'wb') as f:
+        with open('spreadsheat.xlsx', 'wb') as f:
             shutil.copyfileobj(fh, f, length=131072)
         time.sleep(20)
 
@@ -46,7 +45,7 @@ class Auth:
 # The scope you app will use. 
 # (NEEDS to be among the enabled in your OAuth consent screen)
 SCOPES = "https://www.googleapis.com/auth/drive.readonly"
-CLIENT_SECRET_FILE = "credentials.json"
+CLIENT_SECRET_FILE = "credentialsmaxem.json"
  
 credentials = Auth(client_secret_filename=CLIENT_SECRET_FILE, scopes=SCOPES).get_credentials()
  
