@@ -91,7 +91,7 @@ def job():
 #one time setup for use with the Discord bot and Google API
 class Auth:
     def __init__(self, client_secret_filename, scopes):
-        schedule.every().day.at("13:44").do(job)
+        schedule.every().day.at("08:50").do(job)
         self.client_secret = client_secret_filename
         self.scopes = scopes
         self.flow = google_auth_oauthlib.flow.Flow.from_client_secrets_file(self.client_secret, self.scopes)
