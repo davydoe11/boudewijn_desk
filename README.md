@@ -1,2 +1,4 @@
 # boudewijn_desk
-repository to check if Boudewijn is at his desk
+In this repository i made a fun little script to save me from fighting with a colleague.
+
+This program downloads a company planner file from the google drive using a API. After this the corresponding colleague will be selelected and each morning arround 8:50 you will get a Discord notification on your phone if your favorite desk is availible.
