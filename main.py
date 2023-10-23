@@ -26,7 +26,7 @@ def get_table():
 
     df = pd.DataFrame(pd.read_excel("spreadsheat.xlsx"))
     df = df.dropna(how='all')
-    df = df[['2 jan t/m 6 jan', 'Unnamed: 2', 'Maandag', 'Dinsdag', 'Woensdag', 'Donderdag', 'Vrijdag']]
+    df = df[['2 jan t/m 6 jan', 'Unnamed: 2', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday']]
 
     df.rename(columns={'2 jan t/m 6 jan': 'Datum', 'Unnamed: 2': 'Persoon'}, inplace=True)
 
@@ -44,6 +44,11 @@ def get_table():
     df = df.drop(df.loc[index_end:df.tail(1).index[0]].index)
     df = df.loc[df['Persoon'] == "Boudewijn"]
     return df
+
+def day_checker(df):
+    now = datetime.datetime.now()
+    day = now.strftime("%A")
+    return day
 
 def download():
     f = open('id.txt', 'r')
