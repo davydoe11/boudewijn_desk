@@ -26,9 +26,9 @@ def get_table():
 
     df = pd.DataFrame(pd.read_excel("spreadsheat.xlsx"))
     df = df.dropna(how='all')
-    df = df[['2 jan t/m 6 jan', 'Unnamed: 2', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday']]
+    df = df[['2 jan t/m 6 jan', 'Unnamed: 2', 'Maandag', 'Dinsdag', 'Woensdag', 'Donderdag', 'Vrijdag']]
 
-    df.rename(columns={'2 jan t/m 6 jan': 'Datum', 'Unnamed: 2': 'Persoon'}, inplace=True)
+    df.rename(columns={'2 jan t/m 6 jan': 'Datum', 'Unnamed: 2': 'Persoon', 'Maandag' : 'Monday' , 'Dinsdag' : 'Tuesday', 'Woensdag' : 'Wednesday' , 'Donderdag' : 'Thursday', 'Vrijdag' : 'Friday' }, inplace=True)
 
     date_format = "%Y-%m-%d %H:%M:%S"
     df['Datum'] = df['Datum'].apply(lambda x: x.strftime(date_format) if isinstance(x, datetime) else x)
@@ -46,9 +46,11 @@ def get_table():
     return df
 
 def day_checker(df):
-    now = datetime.datetime.now()
+    now = datetime.now()
     day = now.strftime("%A")
-    return day
+    val = df[day].values[0]
+    print(val)
+    
 
 def download():
     f = open('id.txt', 'r')
@@ -95,3 +97,4 @@ while True:
     time.sleep(20)
     df = get_table()
     print(df.head)
+    day_checker(df)
