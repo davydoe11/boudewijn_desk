@@ -9,7 +9,9 @@ from googleapiclient.http import MediaIoBaseDownload
 import pandas as pd
 import pendulum
 from datetime import datetime, timedelta
-import pytz
+import discord_notify as dn
+URL = "https://discord.com/api/webhooks/1165954358438023229/tp-s3g9GVviVcNTHH2PifSqJbfiIoU7yqgL3dNHxkSieUuPU7mzUNla5BmxBc0hPh8un"
+notifier = dn.Notifier(URL)
 
 def get_table():
     index_begin = 0
@@ -50,7 +52,11 @@ def day_checker(df):
     day = now.strftime("%A")
     val = df[day].values[0]
     print(val)
-    
+    if (val == "Present"):
+        notifier.send("Boudewijn is vandaag op Kantoor 🥲", print_message=False)
+    else:      
+        notifier.send("Bureau is vrij gek!!! 🦅", print_message=False)
+        
 
 def download():
     f = open('id.txt', 'r')
@@ -71,6 +77,7 @@ def download():
 
 
 class Auth:
+    
 
     def __init__(self, client_secret_filename, scopes):
         self.client_secret = client_secret_filename
@@ -93,6 +100,7 @@ credentials = Auth(client_secret_filename=CLIENT_SECRET_FILE, scopes=SCOPES).get
 
 drive_service = build('drive', 'v3', credentials=credentials)
 while True:
+    
     download()
     time.sleep(20)
     df = get_table()
