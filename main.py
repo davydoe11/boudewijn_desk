@@ -16,6 +16,7 @@ import schedule
 URL = "https://discord.com/api/webhooks/1165954358438023229/tp-s3g9GVviVcNTHH2PifSqJbfiIoU7yqgL3dNHxkSieUuPU7mzUNla5BmxBc0hPh8un"
 notifier = dn.Notifier(URL)
 blacklist = ["Saturday", "Sunday"]
+persoon = "Boudewijn"
 
 
 #Funtion for cleaning table to only see this weeks boudewijn stats.
@@ -51,7 +52,7 @@ def get_table():
     index_end = index_end.to_numpy()[0]
     df = df.drop(df.loc[0:index_begin].index)
     df = df.drop(df.loc[index_end:df.tail(1).index[0]].index)
-    df = df.loc[df['Persoon'] == "Boudewijn"]
+    df = df.loc[df['Persoon'] == persoon]
     return df
 
 #fucntion for daily day checking, and printing the corresponding response
