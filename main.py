@@ -1,22 +1,19 @@
-import io
-import shutil
 import time
-import google_auth_oauthlib.flow
-from google.auth.transport.requests import Request
-from google_auth_oauthlib.flow import InstalledAppFlow
 from googleapiclient.discovery import build
-from googleapiclient.http import MediaIoBaseDownload
 import pandas as pd
 import pendulum
 from datetime import datetime, timedelta
 import discord_notify as dn
 import schedule
+from google.oauth2 import service_account
 
 #Url of discord webhook bot
-URL = "https://discord.com/api/webhooks/1165954358438023229/tp-s3g9GVviVcNTHH2PifSqJbfiIoU7yqgL3dNHxkSieUuPU7mzUNla5BmxBc0hPh8un"
+person = "Boudewijn"
+f = open('url.txt', 'r')
+URL = f.readline()
 notifier = dn.Notifier(URL)
 blacklist = ["Saturday", "Sunday"]
-persoon = "Boudewijn"
+
 
 
 #Funtion for cleaning table to only see this weeks boudewijn stats.
@@ -52,68 +49,55 @@ def get_table():
     index_end = index_end.to_numpy()[0]
     df = df.drop(df.loc[0:index_begin].index)
     df = df.drop(df.loc[index_end:df.tail(1).index[0]].index)
-    df = df.loc[df['Persoon'] == persoon]
+    df = df.loc[df['Persoon'] == person]
     return df
 
 #fucntion for daily day checking, and printing the corresponding response
-def day_checker(df, day):
+def day_checker(df, day, person):
     val = df[day].values[0]
     if (val == "Present"):
-        notifier.send("Boudewijn is vandaag op Kantoor 🥲", print_message=False)
+        notifier.send(f"{person} is vandaag op Kantoor 🥲", print_message=False)
     else:      
-        notifier.send("Bureau is vrij gek!!! 🦅", print_message=False)
+        notifier.send(f"Bureau {person} is vrij gek!!! 🦅", print_message=False)
         
 #Using the google drive APi we download the most recent spreadsheet
 def download():
     f = open('id.txt', 'r')
     file_id = f.readline()
-    request = drive_service.files().export_media(fileId=file_id, mimeType='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet')
-    fh = io.BytesIO()
-    downloader = MediaIoBaseDownload(fh, request)
-    done = False
-    while done is False:
-        status, done = downloader.next_chunk()
-    # The file has been downloaded into RAM, now save it in a file
-    fh.seek(0)
+    credentials = service_account.Credentials.from_service_account_file('credentials-service.json', scopes=['https://www.googleapis.com/auth/drive.readonly'])
+
+    # Replace 'your_spreadsheet_id' with the actual ID of your spreadsheet
+    spreadsheet_id = file_id
+
+    # Create a Google Drive API service
+    service = build('drive', 'v3', credentials=credentials)
+
+    # Download the spreadsheet
+    request = service.files().export_media(fileId=spreadsheet_id, mimeType='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet')
+    response = request.execute()
+
+    # Save the spreadsheet content to a file
     with open('spreadsheat.xlsx', 'wb') as f:
-        shutil.copyfileobj(fh, f, length=131072)
+        f.write(response)
 
 #The function to run once the time has come
 def job():
+
     now = datetime.now()
     day = now.strftime("%A")
     if day not in blacklist:
         download()
         time.sleep(1)
         df = get_table()
-        day_checker(df, day)
+        day_checker(df, day, person)
+        print(f"Send Succesfull {now}")
     
 
 #one time setup for use with the Discord bot and Google API
-class Auth:
-    def __init__(self, client_secret_filename, scopes):
-        schedule.every().day.at("08:50").do(job)
-        self.client_secret = client_secret_filename
-        self.scopes = scopes
-        self.flow = google_auth_oauthlib.flow.Flow.from_client_secrets_file(self.client_secret, self.scopes)
-        self.flow.redirect_uri = 'http://localhost:8080/'
-        self.creds = None
-
-    def get_credentials(self):
-        flow = InstalledAppFlow.from_client_secrets_file(self.client_secret, self.scopes)
-        self.creds = flow.run_local_server(port=8080)
-        return self.creds
-
-# The scope your app will use.
-# (NEEDS to be among the enabled in your OAuth consent screen)
-SCOPES = "https://www.googleapis.com/auth/drive.readonly"
-CLIENT_SECRET_FILE = "credentialsmaxem.json"
-
-#Credentials saved in the specific file.
-credentials = Auth(client_secret_filename=CLIENT_SECRET_FILE, scopes=SCOPES).get_credentials()
-
-drive_service = build('drive', 'v3', credentials=credentials)
-while True:
-    schedule.run_pending()
-    time.sleep(60) # wait one minute
-   
+class Main:
+        now = datetime.now()
+        print(f"Just rebooted: {now}")
+        schedule.every().day.at("16:28").do(job)
+        while True:
+            schedule.run_pending()
+            time.sleep(60) # wait one minute
