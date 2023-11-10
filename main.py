@@ -97,7 +97,7 @@ def job():
 class Main:
         now = datetime.now()
         print(f"Just rebooted: {now}")
-        schedule.every().day.at("16:28").do(job)
+        schedule.every().day.at("8:45").do(job)
         while True:
             schedule.run_pending()
             time.sleep(60) # wait one minute
