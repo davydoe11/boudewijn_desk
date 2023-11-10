@@ -13,7 +13,7 @@ import discord_notify as dn
 import schedule
 
 #Url of discord webhook bot
-URL = "https://discord.com/api/webhooks/1165954358438023229/tp-s3g9GVviVcNTHH2PifSqJbfiIoU7yqgL3dNHxkSieUuPU7mzUNla5BmxBc0hPh8un"
+URL = 
 notifier = dn.Notifier(URL)
 blacklist = ["Saturday", "Sunday"]
 persoon = "Boudewijn"
