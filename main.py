@@ -38,21 +38,28 @@ def get_table():
     # reading the downloaded spreedsheet
     df = pd.DataFrame(pd.read_excel("spreadsheat.xlsx"))
     df = df.dropna(how='all')
-    df = df[['2 jan t/m 6 jan', 'Unnamed: 2', 'Maandag', 'Dinsdag', 'Woensdag', 'Donderdag', 'Vrijdag']]
-
+    df = df[['1 jan t/m 5 jan', 'Unnamed: 2', 'Maandag', 'Dinsdag', 'Woensdag', 'Donderdag', 'Vrijdag']]
     # renaming for easier data usage
-    df.rename(columns={'2 jan t/m 6 jan': 'Datum', 'Unnamed: 2': 'Persoon', 'Maandag': 'Monday', 'Dinsdag': 'Tuesday',
+    df.rename(columns={'1 jan t/m 5 jan': 'Datum', 'Unnamed: 2': 'Persoon', 'Maandag': 'Monday', 'Dinsdag': 'Tuesday',
                        'Woensdag': 'Wednesday', 'Donderdag': 'Thursday', 'Vrijdag': 'Friday'}, inplace=True)
+
     date_format = "%Y-%m-%d %H:%M:%S"
     df['Datum'] = df['Datum'].apply(lambda x: x.strftime(date_format) if isinstance(x, datetime) else x)
 
     # Convert the datetime.datetime objects to strings with the specified format, and formatting table to only this week.
+    print(df.to_string())
+    print("formatted date", formatted_date)
     indexes_of_date = df[df['Datum'].notna() & df['Datum'].str.contains(formatted_date)].index.tolist()
-    index_begin = indexes_of_date[-1]
+    try:
+        index_begin = indexes_of_date[-1]
+    except:
+        print("Start date not found")
+        index_begin = 0
     print("index begin: ", index_begin)
     index_end = df.index[df['Datum'] == output_string]
+    print("index end", index_end)
     index_end = index_end[-1]
-    print("index end: ", index_end)
+
 
     df = df.drop(df.loc[0:index_begin].index)
     df = df.drop(df.loc[index_end:df.tail(1).index[0]].index)
@@ -108,8 +115,8 @@ def job():
 class Main:
     now = datetime.now()
     print(f"Just rebooted: {now}")
-    # schedule.every().day.at("10:22").do(job)
-    job()
+    schedule.every().day.at("10:22").do(job)
+    # job()
     while True:
         schedule.run_pending()
         time.sleep(60)  # wait one minute
